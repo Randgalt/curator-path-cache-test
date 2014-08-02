@@ -13,13 +13,14 @@ public class SinglePathTester implements Closeable, Runnable
     private final Logger log;
     private final CuratorFramework client;
     private final int nodesPerPath;
-    private final String ourBasePath;
+    private final Tester tester;
     private final int index;
     private final RateLimiter rateLimiter;
     private final int deletePercent;
 
-    public SinglePathTester(String connectionString, int index, RateLimiter rateLimiter, int deletePercent, int nodesPerPath)
+    public SinglePathTester(Tester tester, String connectionString, int index, RateLimiter rateLimiter, int deletePercent, int nodesPerPath)
     {
+        this.tester = tester;
         this.index = index;
         this.rateLimiter = rateLimiter;
         this.deletePercent = deletePercent;
@@ -27,7 +28,6 @@ public class SinglePathTester implements Closeable, Runnable
 
         this.nodesPerPath = nodesPerPath;
         client = Tester.newClient(connectionString);
-        ourBasePath = Tester.makePath(index);
     }
 
     @Override
@@ -45,8 +45,8 @@ public class SinglePathTester implements Closeable, Runnable
             {
                 try
                 {
-                    client.delete().inBackground().forPath(Tester.makeChildPath(index, nodeNumber));
-                    client.create().inBackground().forPath(Tester.makeChildPath(index, nodeNumber), Tester.PAYLOAD);
+                    client.delete().inBackground().forPath(tester.makeChildPath(index, nodeNumber));
+                    client.create().inBackground().forPath(tester.makeChildPath(index, nodeNumber), Tester.PAYLOAD);
                 }
                 catch ( Exception e )
                 {
@@ -57,7 +57,7 @@ public class SinglePathTester implements Closeable, Runnable
             {
                 try
                 {
-                    client.setData().inBackground().forPath(Tester.makeChildPath(index, nodeNumber), Tester.PAYLOAD);
+                    client.setData().inBackground().forPath(tester.makeChildPath(index, nodeNumber), Tester.PAYLOAD);
                 }
                 catch ( Exception e )
                 {

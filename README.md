@@ -18,6 +18,8 @@ java -Xmx100M -jar target/tester.jar <options>
 ```
 Option                      Description                            
 ------                      -----------                            
+--base-path                 The base ZK path for test (default:    
+                              /one/two/three)                      
 --client-qty [Integer]      number of clients to use for ops       
                               (default: 15)                        
 --connection-string         If using an external cluster, the      

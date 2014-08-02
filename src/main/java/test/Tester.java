@@ -9,6 +9,7 @@ import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.apache.curator.test.TestingCluster;
 import org.apache.curator.utils.CloseableUtils;
 import org.apache.curator.utils.ZKPaths;
+import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.List;
@@ -27,14 +28,16 @@ public class Tester implements AutoCloseable
     private final int pathQty;
     private final int nodesPerPath;
     private final CountingCacheListener listener = new CountingCacheListener();
+    private final String basePath;
 
-    public static final String BASE_PATH = "/one/two/three";
     public static final byte[] PAYLOAD = "the quick brown box jumps over the lazy dog".getBytes();
     public static final String NAME_BASE = "node-";
 
-    public Tester(int pathQty, int opsPerSecond, int deletePercent, int nodesPerPath, int clientQty, int serverQty, String connectionString)
+    public Tester(int pathQty, int opsPerSecond, int deletePercent, int nodesPerPath, int clientQty, int serverQty, String connectionString, String basePath)
     {
+        this.basePath = basePath;
         log.info(String.format("pathQty: %d | opsPerSecond: %d | deletePercent: %d | nodesPerPath %d | clientQty: %d | serverQty: % d", pathQty, opsPerSecond, deletePercent, nodesPerPath, clientQty, serverQty));
+        log.info("Base path: " + basePath);
 
         if ( connectionString != null )
         {
@@ -64,7 +67,7 @@ public class Tester implements AutoCloseable
         RateLimiter rateLimiter = RateLimiter.create(opsPerSecond);
         for ( int i = 0; i < clientQty; ++i )
         {
-            SinglePathTester tester = new SinglePathTester(connectionString, i, rateLimiter, deletePercent, nodesPerPath);
+            SinglePathTester tester = new SinglePathTester(this, connectionString, i, rateLimiter, deletePercent, nodesPerPath);
             testers.add(tester);
         }
     }
@@ -96,7 +99,14 @@ public class Tester implements AutoCloseable
             {
                 for ( int j = 0; j < nodesPerPath; ++j )
                 {
-                    mainClient.create().creatingParentsIfNeeded().forPath(makeChildPath(i, j), PAYLOAD);
+                    try
+                    {
+                        mainClient.create().creatingParentsIfNeeded().forPath(makeChildPath(i, j), PAYLOAD);
+                    }
+                    catch ( KeeperException.NodeExistsException ignore )
+                    {
+                        // ignore
+                    }
                 }
             }
             log.info("Nodes created");
@@ -146,12 +156,12 @@ public class Tester implements AutoCloseable
         CloseableUtils.closeQuietly(cluster);
     }
 
-    public static String makePath(int index)
+    public String makePath(int index)
     {
-        return ZKPaths.makePath(BASE_PATH, Integer.toString(index));
+        return ZKPaths.makePath(basePath, Integer.toString(index));
     }
 
-    public static String makeChildPath(int index, int nodeNumber)
+    public String makeChildPath(int index, int nodeNumber)
     {
         String basePath = makePath(index);
         return ZKPaths.makePath(basePath, NAME_BASE + nodeNumber);

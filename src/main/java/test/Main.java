@@ -10,6 +10,8 @@ import java.util.concurrent.TimeUnit;
 
 public class Main
 {
+    private static final String DEFAULT_BASE_PATH = "/one/two/three";
+
     public static void main(String[] args) throws Exception
     {
         OptionParser parser = new OptionParser();
@@ -20,6 +22,7 @@ public class Main
         OptionSpec<Integer> clientQty = parser.accepts("client-qty", "number of clients to use for ops").withOptionalArg().ofType(Integer.class).defaultsTo(15);
         OptionSpec<Integer> serverQty = parser.accepts("server-qty", "number of ZooKeeper instances for internal cluster. Ignored for external clusters.").withOptionalArg().ofType(Integer.class).defaultsTo(3);
         OptionSpec<String> connectionString = parser.accepts("connection-string", "If using an external cluster, the connection string").withOptionalArg().ofType(String.class);
+        OptionSpec<String> basePath = parser.accepts("base-path", "The base ZK path for test").withOptionalArg().ofType(String.class).defaultsTo(DEFAULT_BASE_PATH);
         final OptionSpec<Integer> testLength = parser.accepts("test-length", "test length in seconds").withOptionalArg().ofType(Integer.class).defaultsTo(60);
         parser.accepts("help", "prints this help");
 
@@ -30,7 +33,7 @@ public class Main
             return;
         }
 
-        try ( final Tester tester = new Tester(pathQty.value(parsed), opsPerSecond.value(parsed), deletePercent.value(parsed), nodesPerPath.value(parsed), clientQty.value(parsed), serverQty.value(parsed), connectionString.value(parsed)) )
+        try ( final Tester tester = new Tester(pathQty.value(parsed), opsPerSecond.value(parsed), deletePercent.value(parsed), nodesPerPath.value(parsed), clientQty.value(parsed), serverQty.value(parsed), connectionString.value(parsed), basePath.value(parsed)) )
         {
             ExecutorService service = Executors.newSingleThreadExecutor();
             Runnable runner = new Runnable()
