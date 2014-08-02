@@ -18,7 +18,7 @@ public class Main
         OptionSpec<Integer> deletePercent = parser.accepts("delete-percent", "percentage (0-100) of delete ops vs write ops").withOptionalArg().ofType(Integer.class).defaultsTo(25);
         OptionSpec<Integer> nodesPerPath = parser.accepts("nodes-per-path", "number of nodes to have in each path").withOptionalArg().ofType(Integer.class).defaultsTo(3000);
         OptionSpec<Integer> clientQty = parser.accepts("client-qty", "number of clients to use for ops").withOptionalArg().ofType(Integer.class).defaultsTo(15);
-        OptionSpec<Integer> serverQty = parser.accepts("server-qty", "number of ZooKeeper instances for internal cluster. Pass 0 for external cluster.").withOptionalArg().ofType(Integer.class).defaultsTo(3);
+        OptionSpec<Integer> serverQty = parser.accepts("server-qty", "number of ZooKeeper instances for internal cluster. Ignored for external clusters.").withOptionalArg().ofType(Integer.class).defaultsTo(3);
         OptionSpec<String> connectionString = parser.accepts("connection-string", "If using an external cluster, the connection string").withOptionalArg().ofType(String.class);
         final OptionSpec<Integer> testLength = parser.accepts("test-length", "test length in seconds").withOptionalArg().ofType(Integer.class).defaultsTo(60);
         parser.accepts("help", "prints this help");
