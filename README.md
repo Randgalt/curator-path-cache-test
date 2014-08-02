@@ -10,7 +10,7 @@ mvn clean package
 h3. Running
 
 ```
-java -Xmx100M target/tester.jar <options>
+java -Xmx100M -jar target/tester.jar <options>
 ```
 
 h3. Options
