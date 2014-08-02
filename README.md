@@ -1,19 +1,19 @@
 curator-path-cache-test
 =======================
 
-h3. Building
+## Building
 
 ```
 mvn clean package
 ```
 
-h3. Running
+## Running
 
 ```
 java -Xmx100M -jar target/tester.jar <options>
 ```
 
-h3. Options
+## Options
 
 ```
 Option                      Description                            
