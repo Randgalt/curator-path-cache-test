@@ -1,6 +1,7 @@
 curator-path-cache-test
 =======================
 
+```
 Option                      Description                            
 ------                      -----------                            
 --client-qty [Integer]      number of clients to use for ops       
@@ -19,3 +20,4 @@ Option                      Description
                               internal cluster. Pass 0 for         
                               external cluster. (default: 3)       
 --test-length [Integer]     test length in seconds (default: 60)   
+```
